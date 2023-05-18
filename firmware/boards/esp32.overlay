@@ -1,3 +1,13 @@
-/ {
 
+&i2c0 {
+    status = "okay";
+    i2c0_pcal6416a: pcal6416a@20 {
+	    compatible = "nxp,pcal6416a";
+        status = "okay";
+	    reg = <0x20>;
+		#gpio-cells = <2>;
+	    gpio-controller;
+	    ngpios = <16>;
+    };
 };
+
