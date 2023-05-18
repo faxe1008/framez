@@ -1,0 +1,97 @@
+#!/bin/bash
+
+usage () {
+	echo "Setup build enviroment for zephyr builds"
+	echo "Requires setup done by ./scripts/boostrap-build-env or manual equivalent"
+	echo "usage:"
+	echo "   source zephyr-init-env"
+	echo ""
+	echo "Toolchain paths should already be added in ~/.zephyrrc"
+}
+
+if [ -n "$BASH_SOURCE" ]; then
+    THIS_SCRIPT=$BASH_SOURCE
+elif [ -n "$ZSH_NAME" ]; then
+    THIS_SCRIPT="${(%):-%N}"
+else
+    THIS_SCRIPT="$(pwd)/zephyr-init-env"
+fi
+
+if [ -z "$ZSH_NAME" ] && [ "$0" == "$THIS_SCRIPT" ]; then
+    echo "Error: This script needs to be sourced. Please run as 'source ${THIS_SCRIPT}'"
+    usage
+    exit 1
+fi
+
+__SCRIPT_PATH="$(dirname "${THIS_SCRIPT}")"
+if [ "x${__SCRIPT_PATH:0:1}" != "x/" ]; then
+	__SCRIPT_PATH="$(pwd)/${__SCRIPT_PATH}"
+fi
+__REPO_ROOT="${__SCRIPT_PATH}"
+__ZEPHYR_BASE="${__REPO_ROOT}/vendor/zephyr"
+
+# init virtual python env, necessary to make sure tools are correct versions.
+# use this for releases (makes sure tools are matching version, esp. when/after switching base repo revision)
+_zephyr_version="custom"
+
+# use this if frequently changing versions during development
+# this can be anything, but must match the bootstrap script for correct setup. (or do manually)
+#_zephyr_version="main"
+
+if [ -z "${_zephyr_version}" ]; then
+
+	echo "Warn: could not find zephyr version. zephyr submodule in '${__ZEPHYR_BASE}' is not setup correctly"
+	echo "Error: please run 'scripts/boostrap-build-env.sh'"
+	unset _zephyr_version
+	unset _venv_name
+	unset _venv_path
+	unset __REPO_ROOT
+	unset __ZEPHYR_BASE
+	unset __SCRIPT_PATH
+
+	return 1
+fi
+
+_venv_name=".venv_zephyr"
+
+# virtualenv will be in the root repo folder
+_venv_path="${__REPO_ROOT}/${_venv_name}"
+source "${__SCRIPT_PATH}/vendor/zephyr/zephyr-env.sh"
+
+if [ -d "${_venv_path}" ] && [ -f "${_venv_path}/bin/activate" ]; then
+	source "${_venv_path}/bin/activate" || { echo "Error: virtualenv in ${_venv_path} is not setup, please run 'scripts/boostrap-build-env.sh'"; return 1; }
+else
+	[ -d "${_venv_path}" ] &&
+	[ -f "${_venv_path}/bin/activate" ] ||
+	echo "Error: virtualenv in ${_venv_path} is not setup, please run 'scripts/boostrap-build-env.sh'"
+	unset _zephyr_version
+	unset _venv_name
+	unset _venv_path
+	unset __REPO_ROOT
+	unset __ZEPHYR_BASE
+	unset __SCRIPT_PATH
+	return 1
+fi
+
+unset _zephyr_version
+unset _venv_name
+unset _venv_path
+
+# add our GDB to PATH
+if [ -n "${GNUARMEMB_TOOLCHAIN_PATH}" ]; then
+	PATH="${GNUARMEMB_TOOLCHAIN_PATH}/bin:${PATH}"
+fi
+if [ -n "${ZEPHYR_SDK_INSTALL_DIR}" ]; then
+	PATH="${ZEPHYR_SDK_INSTALL_DIR}/arm-zephyr-eabi/bin:${PATH}"
+fi
+unset __SCRIPT_PATH
+
+_repo_root_abs="$(cd ${__REPO_ROOT}; pwd)"
+unset __REPO_ROOT
+
+export PATH
+
+cat <<- EOF
+	Build environment for '$(basename "$_repo_root_abs")' firmware build initialized
+EOF
+unset _repo_root_abs

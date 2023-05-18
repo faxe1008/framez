@@ -1,0 +1,18 @@
+manifest:
+  self:
+    path: framez
+
+  remotes:
+    - name: zephyrproject-rtos
+      url-base: https://github.com/zephyrproject-rtos
+
+  defaults:
+    remote: zephyrproject-rtos
+
+  projects:
+    - name: zephyr
+      revision: cfd4a3fc784ce014e44765909e85421b3fbd0787
+      import:
+        path-prefix: vendor
+        path-allowlist:
+          - modules/hal/espressif
