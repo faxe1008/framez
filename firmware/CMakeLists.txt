@@ -14,8 +14,11 @@ project(ld2410_test)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra")
 
 target_include_directories(app PRIVATE
+    src/system
+    src/util
 )
 
 target_sources(app PRIVATE
   src/main.c
+  src/system/battery_sys.c
 )

@@ -1,1 +1,32 @@
 source "Kconfig.zephyr"
+
+
+menu "Framez"
+
+	menu "Battery Management"
+		config BATTERY_VOLTAGE_EXTRA_SAMPLING_COUNT
+			int "Battery voltage sampling count"
+			default 1
+			help
+				Determines the amount of additional sampling done on the ADC
+        
+        config BATTERY_VOLTAGE_SAMPLING_INTERVAL
+			int "Battery voltage sampling interval in us"
+			default 5000
+			help
+				Determines the delay between samplings
+
+		config BATTERY_VOLTAGE_MIN
+			int "Battery voltage minimum in mV"
+			default 3400
+			help
+				Minimum battery voltage
+
+		config BATTERY_VOLTAGE_MAX
+			int "Battery voltage maximum in mV"
+			default 3700
+			help
+				Maximum battery voltage
+	endmenu
+
+endmenu
