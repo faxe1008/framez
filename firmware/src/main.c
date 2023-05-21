@@ -2,6 +2,8 @@
 #include <zephyr/logging/log.h>
 #include "battery_sys.h"
 LOG_MODULE_REGISTER(app);
+#include <zephyr/drivers/display.h>
+const struct device* display_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
 
 void main(void)
 {

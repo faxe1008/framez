@@ -4,14 +4,14 @@ manifest:
 
   remotes:
     - name: zephyrproject-rtos
-      url-base: https://github.com/zephyrproject-rtos
+      url-base: https://github.com/faxe1008
 
   defaults:
     remote: zephyrproject-rtos
 
   projects:
     - name: zephyr
-      revision: cfd4a3fc784ce014e44765909e85421b3fbd0787
+      revision: 958bdc60b2ca1e70d962ab5a41302ed76ab810d6
       import:
         path-prefix: vendor
         path-allowlist:
